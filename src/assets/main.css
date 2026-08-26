@@ -21,3 +21,8 @@ body {
         -apple-system,
         sans-serif;
 }
+
+html {
+    @apply scrollbar-none;
+}
+

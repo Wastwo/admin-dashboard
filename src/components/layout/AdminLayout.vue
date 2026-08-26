@@ -2,6 +2,7 @@
 import { ref } from 'vue';
 import AdminHeader from './AdminHeader.vue';
 import AdminSidebar from './AdminSidebar.vue';
+import { RouterView } from 'vue-router';
 
 const isDrawerOpen = ref(true);
 </script>
@@ -13,7 +14,7 @@ const isDrawerOpen = ref(true);
         <div class="flex flex-col flex-1 min-w-0 transition-all duration-300 ease-in-out">
             <AdminHeader v-model:is-drawer-open="isDrawerOpen" />
             <main class="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8">
-                <slot></slot>
+                <RouterView/>
             </main>
         </div>
     </div>
