@@ -5,10 +5,12 @@ defineProps({
         required: true,
     },
 });
+
+const emit = defineEmits(['selected']);
 </script>
 
 <template>
-    <div class="flex flex-wrap items-center justify-between bg-base-100 px-5 py-3.5">
+    <div @click="emit('selected', user.id)" class="flex flex-wrap items-center justify-between bg-base-100 px-5 py-3.5">
         <div class="flex justify-center items-center gap-3">
             <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-admin-sidebar text-xs font-medium text-white font-display">
                 {{ user.avatar }}
