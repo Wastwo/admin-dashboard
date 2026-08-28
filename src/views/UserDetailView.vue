@@ -1,5 +1,5 @@
 <script setup>
-import { computed, ref } from 'vue';
+import { computed, onMounted, ref, watch } from 'vue';
 import { useRouter } from 'vue-router';
 import { useUsers } from '@/composables/useUsers';
 
@@ -8,8 +8,9 @@ const props = defineProps({
 });
 
 const router = useRouter();
-const { getUserById } = useUsers();
+const { currentUser: user, fetchUserById, isLoading, errorMessage } = useUsers();
 const activeTab = ref('overview');
+
 const icon = d => {
     return `<svg class="size-3.5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${d}</svg>`;
 };
@@ -30,49 +31,19 @@ const tabs = [
     { id: 'sessions', label: 'Sessions', icon: icon('<rect width="20" height="14" x="2" y="3" rx="2"/><line x1="8" x2="16" y1="21" y2="21"/><line x1="12" x2="12" y1="17" y2="21"/>') },
 ];
 
-const user = computed(() => {
-    return getUserById(props.id);
+const stats = computed(() => user.value?.stats || []);
+const accountInfo = computed(() => user.value?.accountInfo || []);
+const permissions = computed(() => user.value?.permissions || []);
+const activityLog = computed(() => user.value?.activityLog || []);
+const sessions = computed(() => user.value?.sessions || []);
+const profileFields = computed(() => {
+    if (!user.value) return [];
+    return [
+        { label: 'Email', value: user.value.email },
+        { label: 'Username', value: `@${user.value.username}` },
+        { label: 'Location', value: `${user.value.location} · ${user.value.timezone}` },
+    ];
 });
-
-const stats = [
-    { label: 'Projects', value: '24' },
-    { label: 'Tasks Done', value: '147' },
-    { label: 'Streak', value: '12 Days' },
-    { label: 'Active', value: '2m ago' },
-];
-
-const profileFields = [
-    { label: 'Email', value: user.value.email },
-    { label: 'Username', value: `@${user.value.username}` },
-    { label: 'Location', value: `${user.value.location} · ${user.value.timezone}` },
-];
-
-const accountInfo = [
-    { label: 'Last Login', value: user.value.lastLogin, tone: false },
-    { label: 'Status', value: 'Online', tone: true },
-    { label: '2FA', value: 'Enabled', tone: true },
-];
-
-const permissions = [
-    { label: 'Manage Users', granted: true },
-    { label: 'View Analytics', granted: true },
-    { label: 'Edit Content', granted: true },
-    { label: 'Delete Records', granted: false },
-    { label: 'System Settings', granted: true },
-    { label: 'Billing Access', granted: false },
-];
-
-const activityLog = [
-    { action: 'Logged in', detail: 'Chrome on macOS', time: '2 minutes ago', icon: 'login', security: true },
-    { action: 'Changed password', detail: 'Security settings', time: '2 days ago', icon: 'lock', security: true },
-    { action: 'Completed task "Design Review"', detail: 'Project: Mobile App', time: '3 hours ago', icon: 'check', security: false },
-    { action: 'Created new project', detail: 'Website Redesign', time: '5 days ago', icon: 'plus', security: false },
-];
-
-const sessions = [
-    { device: 'MacBook Pro', browser: 'Chrome 120', location: 'San Francisco, US', active: true, lastActive: 'Current session', icon: 'desktop' },
-    { device: 'iPhone 15 Pro', browser: 'Safari', location: 'San Francisco, US', active: true, lastActive: '1 hour ago', icon: 'mobile' },
-];
 
 const activityIcons = {
     login: icon('<path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" x2="3" y1="12" y2="12"/>'),
@@ -85,10 +56,136 @@ const deviceIcons = {
     desktop: icon('<rect width="20" height="14" x="2" y="3" rx="2"/><line x1="8" x2="16" y1="21" y2="21"/><line x1="12" x2="12" y1="17" y2="21"/>'),
     mobile: icon('<rect width="14" height="20" x="5" y="2" rx="2" ry="2"/><path d="M12 18h.01"/>'),
 };
+
+onMounted(() => {
+    fetchUserById(props.id);
+});
+
+watch(
+    () => props.id,
+    newId => {
+        fetchUserById(newId);
+    }
+);
 </script>
 
 <template>
-    <div class="space-y-6">
+    <div v-if="isLoading" class="space-y-6 animate-pulse">
+        <nav class="flex items-center gap-2 text-sm">
+            <div class="h-5 w-12 rounded bg-admin-line/70"></div>
+            <div class="size-3 rounded-sm bg-admin-line/70"></div>
+            <div class="h-5 w-32 rounded bg-admin-line/70"></div>
+        </nav>
+
+        <div class="rounded-xl border border-admin-line bg-base-100 p-5">
+            <div class="flex flex-col gap-6 sm:flex-row sm:items-start sm:justify-between">
+                <div class="flex gap-5">
+                    <div class="relative h-fit shrink-0">
+                        <div class="size-16 rounded-xl bg-admin-line/70 sm:size-20"></div>
+                        <span class="absolute inset-e-0 bottom-0 size-3.5 translate-x-1/3 translate-y-1/3 rounded-full border-2 border-base-100 bg-admin-line/80 sm:size-4"></span>
+                    </div>
+                    <div class="flex flex-col gap-1.5 justify-center items-start pt-0.5">
+                        <div class="h-3 w-20 rounded bg-admin-line/70"></div>
+                        <div class="flex flex-col justify-center gap-1 mt-1">
+                            <div class="h-7 w-40 rounded bg-admin-line/70 sm:h-8 sm:w-56"></div>
+                            <div class="h-4 w-32 rounded bg-admin-line/70 sm:h-5 sm:w-48"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex shrink-0 items-center gap-3 text-sm sm:flex-col sm:items-end sm:gap-1.5">
+                    <span class="inline-flex items-center gap-1.5">
+                        <span class="size-1.5 rounded-full bg-admin-line/70"></span>
+                        <div class="h-5 w-14 rounded bg-admin-line/70"></div>
+                    </span>
+                    <div class="h-4 w-28 rounded bg-admin-line/70"></div>
+                </div>
+            </div>
+
+            <div class="mt-6 flex snap-x snap-mandatory divide-x divide-admin-line overflow-x-auto rounded-xl border border-admin-line scrollbar-none">
+                <div v-for="i in 4" :key="i" class="min-w-28 shrink-0 snap-start px-5 py-4 text-center sm:min-w-0 sm:flex-1 sm:text-left">
+                    <div class="h-7 w-12 rounded bg-admin-line/70 mx-auto sm:mx-0"></div>
+                    <div class="mt-1.5 h-3 w-20 rounded bg-admin-line/70 mx-auto sm:mx-0"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="flex gap-6 overflow-x-auto scrollbar-none">
+            <div v-for="i in 3" :key="i" class="relative flex shrink-0 items-center gap-2 whitespace-nowrap pb-2">
+                <div class="size-3.5 rounded bg-admin-line/70"></div>
+                <div class="h-5 w-20 rounded bg-admin-line/70"></div>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 gap-6 lg:grid-cols-3">
+            <div class="h-fit rounded-xl border border-admin-line bg-base-100 py-4 px-5">
+                <div class="mb-3 h-6 w-24 rounded bg-admin-line/70"></div>
+                <div class="divide-y divide-admin-line">
+                    <div v-for="i in 3" :key="i" class="flex items-center justify-between py-2.5">
+                        <div class="h-5 w-20 rounded bg-admin-line/70"></div>
+                        <div class="h-5 w-32 rounded bg-admin-line/70"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="space-y-6 lg:col-span-2">
+                <div class="rounded-xl border border-admin-line bg-base-100">
+                    <div class="border-b border-admin-line py-4 px-5">
+                        <div class="h-6 w-32 rounded bg-admin-line/70"></div>
+                    </div>
+                    <div class="divide-y divide-admin-line">
+                        <div v-for="i in 3" :key="i" class="grid grid-cols-3 gap-4 px-5 py-3.5">
+                            <div class="h-5 w-24 rounded bg-admin-line/70"></div>
+                            <div class="col-span-2 h-5 w-full max-w-60 rounded bg-admin-line/70"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="rounded-xl border border-admin-line bg-base-100">
+                    <div class="border-b border-admin-line py-4 px-5">
+                        <div class="h-6 w-28 rounded bg-admin-line/70"></div>
+                    </div>
+                    <div class="flex flex-wrap gap-2 px-5 py-3.5">
+                        <div class="h-8 w-20 rounded-full bg-admin-line/70"></div>
+                        <div class="h-8 w-28 rounded-full bg-admin-line/70"></div>
+                        <div class="h-8 w-24 rounded-full bg-admin-line/70"></div>
+                        <div class="h-8 w-32 rounded-full bg-admin-line/70"></div>
+                        <div class="h-8 w-16 rounded-full bg-admin-line/70"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div v-else-if="errorMessage" class="flex flex-col items-center justify-center rounded-xl border border-admin-line bg-base-100 p-12 text-center">
+        <h2 class="font-display text-lg font-semibold text-red-500">Failed to Load User</h2>
+        <p class="mt-1 font-sans text-sm text-text-secondary">{{ errorMessage }}</p>
+        <div class="flex flex-col w-full sm:w-fit sm:flex-row sm:justify-center sm:items-center gap-2 sm:gap-4 mt-4">
+            <button
+                @click="router.push({ name: 'users' })"
+                class="rounded-lg bg-admin-sidebar px-4 py-2 font-sans text-sm text-white active:scale-95 shadow-sm transition-colors duration-200 cursor-pointer"
+            >
+                Back to Users
+            </button>
+            <button
+                type="button"
+                @click="fetchUserById(id)"
+                class="inline-flex items-center justify-center px-4 py-2 text-xs sm:text-sm font-semibold text-white bg-rose-600 hover:bg-rose-700 active:scale-95 rounded-lg shadow-sm transition-colors duration-200 cursor-pointer"
+            >
+                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+                    />
+                </svg>
+                Try Again
+            </button>
+        </div>
+    </div>
+
+    <div v-else-if="user" class="space-y-6">
         <nav class="flex items-center gap-2 text-sm text-text-secondary">
             <button class="transition-colors hover:text-text-primary" @click="router.push({ name: 'users' })">Users</button>
             <svg class="size-3" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
