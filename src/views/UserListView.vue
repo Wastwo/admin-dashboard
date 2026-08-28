@@ -1,21 +1,12 @@
 <script setup>
 import { ref, computed } from 'vue';
+import { useRouter } from 'vue-router';
 import UserCard from '../components/ui/UserCard.vue';
+import { useUsers } from '@/composables/useUsers.js';
 
 const searchQuery = ref('');
-
-const users = ref([
-    { id: 1, name: 'Sarah Chen', email: 'sarah.chen@example.com', lastActive: '2m ago', avatar: 'SC' },
-    { id: 2, name: 'Mike Peters', email: 'mike.p@example.com', lastActive: '15m ago', avatar: 'MP' },
-    { id: 3, name: 'Lisa Wong', email: 'lisa.wong@example.com', lastActive: '1h ago', avatar: 'LW' },
-    { id: 4, name: 'James Miller', email: 'j.miller@example.com', lastActive: '2d ago', avatar: 'JM' },
-    { id: 5, name: 'Anna Davis', email: 'anna.d@example.com', lastActive: '3h ago', avatar: 'AD' },
-    { id: 6, name: 'Tom Wilson', email: 'tom.w@example.com', lastActive: '5h ago', avatar: 'TW' },
-    { id: 7, name: 'Emma Brown', email: 'emma.b@example.com', lastActive: '1d ago', avatar: 'EB' },
-    { id: 8, name: 'David Clark', email: 'd.clark@example.com', lastActive: '5d ago', avatar: 'DC' },
-    { id: 9, name: 'Rachel Green', email: 'rachel.g@example.com', lastActive: '30m ago', avatar: 'RG' },
-    { id: 10, name: 'Chris Evans', email: 'chris.e@example.com', lastActive: '2h ago', avatar: 'CE' },
-]);
+const router = useRouter();
+const { users } = useUsers();
 
 const filteredUsers = computed(() => {
     let result = users.value;
@@ -26,6 +17,10 @@ const filteredUsers = computed(() => {
     }
     return result;
 });
+
+const handleSelectUser = userId => {
+    router.push({ name: 'user-detail', params: { id: userId } });
+};
 </script>
 
 <template>
@@ -53,7 +48,7 @@ const filteredUsers = computed(() => {
                     <path d="m21 21-4.3-4.3" />
                 </svg>
                 <input
-                    v-model="searchQuery"
+                    v-model.trim="searchQuery"
                     type="text"
                     placeholder="Search by name or email..."
                     class="input input-md w-full rounded-xl border-gray-200/60 bg-gray-50 pl-9 text-sm font-sans outline-none"
@@ -62,7 +57,7 @@ const filteredUsers = computed(() => {
         </div>
 
         <div v-if="filteredUsers.length > 0" class="space-y-3">
-            <UserCard v-for="user in filteredUsers" :key="user.id" :user="user" class="rounded-xl border border-gray-200/60" />
+            <UserCard v-for="user in filteredUsers" :key="user.id" :user="user" :show-status="false" :show-email="true" @selected="handleSelectUser" class="rounded-xl border border-gray-200/60" />
         </div>
 
         <div v-else class="flex flex-col gap-3 items-center justify-center bg-base-100 p-12 rounded-xl border border-gray-200/60">

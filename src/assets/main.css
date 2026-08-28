@@ -9,6 +9,9 @@
     --color-admin-header: #ffffff;
     --color-admin-content: #f1f5f9;
     --color-admin-accent: #3b82f6;
+    --color-admin-line: #e5e7eb99;
+    --color-admin-success: #1d8a5d;
+    --color-admin-danger: #a83e2c;
     --color-text-primary: #1f2937;
     --color-text-secondary: #6b7280;
 }
@@ -25,4 +28,3 @@ body {
 html {
     @apply scrollbar-none;
 }
-
