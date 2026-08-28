@@ -4,6 +4,14 @@ defineProps({
         type: Object,
         required: true,
     },
+    showEmail: {
+        type: Boolean,
+        default: true,
+    },
+    showStatus: {
+        type: Boolean,
+        default: true,
+    },
 });
 
 const emit = defineEmits(['selected']);
@@ -18,10 +26,10 @@ const emit = defineEmits(['selected']);
             <div class="flex justify-center items-start gap-4">
                 <div class="flex flex-col">
                     <p class="truncate text-sm font-medium font-sans text-text-primary">{{ user.name }}</p>
-                    <p v-if="user.email" class="truncate text-xs font-sans text-[#a3a7ae]">{{ user.email }}</p>
+                    <p v-if="showEmail && user.email" class="truncate text-xs font-sans text-[#a3a7ae]">{{ user.email }}</p>
                 </div>
                 <span
-                    v-if="user.status"
+                    v-if="showStatus && user.status"
                     class="inline-flex items-center justify-center gap-1 rounded-full px-2 py-0.5 text-xs font-sans font-medium"
                     :class="user.status === 'active' ? 'bg-emerald-50 text-emerald-700' : 'bg-gray-50 text-gray-600'"
                 >
