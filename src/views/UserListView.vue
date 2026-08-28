@@ -57,7 +57,7 @@ const handleSelectUser = userId => {
         </div>
 
         <div v-if="filteredUsers.length > 0" class="space-y-3">
-            <UserCard v-for="user in filteredUsers" :key="user.id" :user="user" @selected="handleSelectUser" class="rounded-xl border border-gray-200/60" />
+            <UserCard v-for="user in filteredUsers" :key="user.id" :user="user" :show-status="false" :show-email="true" @selected="handleSelectUser" class="rounded-xl border border-gray-200/60" />
         </div>
 
         <div v-else class="flex flex-col gap-3 items-center justify-center bg-base-100 p-12 rounded-xl border border-gray-200/60">
