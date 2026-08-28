@@ -1,6 +1,19 @@
 <script setup>
-import { ref } from 'vue';
+import { computed, ref } from 'vue';
 import UserCard from '../components/ui/UserCard.vue';
+import { useUsers } from '@/composables/useUsers.js';
+import { useRouter } from 'vue-router';
+
+const router = useRouter();
+const { users } = useUsers();
+
+const topUsers = computed(() => {
+    return users.value.slice(0, 4);
+});
+
+const handleSelectUser = userId => {
+    router.push({ name: 'user-detail', params: { id: userId } });
+};
 
 const stats = ref([
     { label: 'Total Users', value: '2,847', change: '+12.5%', positive: true, color: 'bg-blue-50 text-blue-600', icon: 'users' },
@@ -25,13 +38,6 @@ const activityIcons = {
     lock: `<svg xmlns="http://www.w3.org/2000/svg" class="text-text-secondary w-2.5 h-2.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/><circle cx="12" cy="16" r="1"/></svg>`,
     settings: `<svg xmlns="http://www.w3.org/2000/svg" class="text-text-secondary w-2.5 h-2.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>`,
 };
-
-const topUsers = ref([
-    { name: 'Sarah Chen', status: 'active', lastActive: '2m ago', avatar: 'SC' },
-    { name: 'Mike Peters', status: 'active', lastActive: '15m ago', avatar: 'MP' },
-    { name: 'Lisa Wong', status: 'active', lastActive: '1h ago', avatar: 'LW' },
-    { name: 'James Miller', status: 'inactive', lastActive: '2d ago', avatar: 'JM' },
-]);
 </script>
 
 <template>
@@ -104,7 +110,15 @@ const topUsers = ref([
                     </div>
                     <RouterLink to="admin/users" class="shrink-0 text-xs font-sans text-text-secondary hover:text-text-primary">View all</RouterLink>
                 </div>
-                <UserCard v-for="user in topUsers" :key="user.name" :user="user" class="border-b border-gray-200/60 last:border-b-0" />
+                <UserCard
+                    v-for="user in topUsers"
+                    :key="user.name"
+                    :user="user"
+                    :show-status="true"
+                    :show-email="false"
+                    @selected="handleSelectUser"
+                    class="border-b border-gray-200/60 last:border-b-0"
+                />
             </div>
 
             <div class="flex flex-col rounded-xl border border-gray-200/60 bg-base-100 lg:col-span-2">
