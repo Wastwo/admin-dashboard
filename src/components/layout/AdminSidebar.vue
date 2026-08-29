@@ -30,7 +30,7 @@ function isActive(item) {
             <button
                 type="button"
                 @click="isDrawerOpen = !isDrawerOpen"
-                class="flex items-center justify-center w-10 h-10 rounded-xl text-text-secondary hover:text-white hover:bg-slate-800 transition-all duration-200"
+                class="flex items-center justify-center w-10 h-10 rounded-xl text-text-secondary hover:text-white hover:bg-slate-800 transition-all duration-200 cursor-pointer"
                 aria-label="Toggle sidebar"
             >
                 <svg
@@ -51,7 +51,7 @@ function isActive(item) {
         </div>
 
         <div class="flex-1 overflow-y-auto overflow-x-hidden" :class="isDrawerOpen ? 'px-4 py-6' : 'px-3 py-13.75'">
-            <h2 v-if="isDrawerOpen" class="text-[10px] px-3 font-sans font-bold text-text-secondary uppercase tracking-widest mb-4 transition-all duration-300 whitespace-nowrap">Menu Utama</h2>
+            <h2 v-if="isDrawerOpen" class="text-[10px] px-3 font-sans font-bold text-text-secondary uppercase tracking-widest mb-4 transition-all duration-300 whitespace-nowrap">MAIN MENU</h2>
 
             <nav class="space-y-1.5">
                 <RouterLink

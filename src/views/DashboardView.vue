@@ -108,7 +108,7 @@ const activityIcons = {
                         </svg>
                         <h2 class="text-base font-display font-semibold text-text-primary">Top Users</h2>
                     </div>
-                    <RouterLink to="admin/users" class="shrink-0 text-xs font-sans text-text-secondary hover:text-text-primary">View all</RouterLink>
+                    <RouterLink class="shrink-0 text-xs font-sans text-text-secondary hover:text-text-primary" :to="{ name: 'users' }">View all</RouterLink>
                 </div>
                 <UserCard
                     v-for="user in topUsers"

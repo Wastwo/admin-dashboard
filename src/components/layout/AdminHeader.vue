@@ -1,12 +1,13 @@
 <script setup>
 import { useRouter } from 'vue-router';
+import { useAuth } from '@/composables/useAuth';
 
-const emit = defineEmits(['logout']);
 const router = useRouter();
 const isDrawerOpen = defineModel('isDrawerOpen', { type: Boolean, default: true });
+const { logout } = useAuth();
 
 function handleLogout() {
-    emit('logout');
+    logout();
     router.push('/login');
 }
 </script>
@@ -17,7 +18,7 @@ function handleLogout() {
             <button
                 type="button"
                 @click="isDrawerOpen = !isDrawerOpen"
-                class="flex lg:hidden items-center justify-center p-2 rounded-xl text-text-secondary hover:text-text-primary hover:bg-gray-100 transition-colors"
+                class="flex lg:hidden items-center justify-center p-2 rounded-xl text-text-secondary hover:text-text-primary hover:bg-gray-100 transition-colors cursor-pointer"
                 aria-label="Toggle mobile menu"
             >
                 <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -31,7 +32,7 @@ function handleLogout() {
         </div>
 
         <div class="flex items-center gap-3 sm:gap-5">
-            <button class="relative p-2 sm:p-2.5 text-text-secondary transition-colors rounded-full hover:bg-gray-100 hover:text-text-primary">
+            <button class="relative p-2 sm:p-2.5 text-text-secondary transition-colors rounded-full hover:bg-gray-100 hover:text-text-primary cursor-pointer">
                 <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
                     <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
                     <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
@@ -43,7 +44,7 @@ function handleLogout() {
 
             <div class="flex items-center gap-1.5">
                 <div class="dropdown dropdown-end">
-                    <div tabindex="0" role="button" class="flex items-center gap-2 rounded-full transition-colors py-1 pl-1 pr-2 sm:pr-2.5 hover:bg-black/5 active:scale-[0.98]">
+                    <div tabindex="0" role="button" class="flex items-center gap-2 rounded-full transition-colors py-1 pl-1 pr-2 sm:pr-2.5 hover:bg-black/5 active:scale-[0.98] cursor-pointer">
                         <span class="grid h-8 w-8 place-items-center rounded-full bg-admin-sidebar text-xs font-display font-semibold text-white">A</span>
                         <span class="hidden sm:block text-sm font-sans font-medium text-text-primary">Admin</span>
                         <svg class="hidden sm:block h-4 w-4 text-text-primary/50" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -54,7 +55,7 @@ function handleLogout() {
                     <ul tabindex="0" class="dropdown-content menu z-50 mt-4 w-52 rounded-xl bg-base-100 p-1.5 shadow-lg">
                         <li class="px-2.5 pb-1.5 pt-2 text-xs font-sans text-text-primary/50">Logged in as Administrator</li>
                         <li>
-                            <button type="button" class="rounded-lg font-medium font-sans text-red-600 hover:bg-red-50" @click="handleLogout">
+                            <button type="button" class="rounded-lg font-medium font-sans text-red-600 hover:bg-red-50 cursor-pointer" @click="handleLogout">
                                 <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                     <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
                                     <path d="M16 17l5-5-5-5" />

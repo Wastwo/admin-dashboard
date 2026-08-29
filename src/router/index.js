@@ -1,9 +1,4 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import LoginView from '@/views/LoginView.vue'
-import AdminLayout from '@/components/layout/AdminLayout.vue'
-import DashboardView from '@/views/DashboardView.vue'
-import UserListView from '@/views/UserListView.vue'
-import UserDetailView from '@/views/UserDetailView.vue'
 import { useAuth } from '@/composables/useAuth'
 
 const router = createRouter({
@@ -12,7 +7,7 @@ const router = createRouter({
         {
             path: '/login',
             name: 'login',
-            component: LoginView,
+            component: () => import('@/views/LoginView.vue'),
             meta: {
                 requiresAuth: false,
                 title: 'Login',
@@ -21,7 +16,7 @@ const router = createRouter({
         {
             path: '/admin',
             name: 'admin',
-            component: AdminLayout,
+            component: () => import('@/components/layout/AdminLayout.vue'),
             meta: {
                 requiresAuth: true,
             },
@@ -29,19 +24,19 @@ const router = createRouter({
                 {
                     path: '',
                     name: 'dashboard',
-                    component: DashboardView,
+                    component: () => import('@/views/DashboardView.vue'),
                     meta: { requiresAuth: true, title: 'Overview' },
                 },
                 {
                     path: 'users',
                     name: 'users',
-                    component: UserListView,
+                    component: () => import('@/views/UserListView.vue'),
                     meta: { requiresAuth: true, title: 'User Management' },
                 },
                 {
                     path: 'users/:id',
                     name: 'user-detail',
-                    component: UserDetailView,
+                    component: () => import('@/views/UserDetailView.vue'),
                     meta: { requiresAuth: true, title: 'User Details' },
                     props: true,
                 }
@@ -50,6 +45,12 @@ const router = createRouter({
         {
             path: '/',
             redirect: '/admin'
+        },
+        {
+            path: '/:pathMatch(.*)*',
+            name: 'not-found',
+            component: () => import('@/views/NotFoundView.vue'),
+            meta: { title: '404 Not Found' }
         }
     ],
 })
