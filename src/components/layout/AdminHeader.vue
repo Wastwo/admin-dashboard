@@ -1,10 +1,17 @@
 <script setup>
 import { useRouter } from 'vue-router';
 import { useAuth } from '@/composables/useAuth';
+import { computed } from 'vue';
 
 const router = useRouter();
 const isDrawerOpen = defineModel('isDrawerOpen', { type: Boolean, default: true });
-const { logout } = useAuth();
+const { logout, currentUsername } = useAuth();
+
+const displayName = computed(() => {
+    const name = currentUsername.value ?? 'Admin';
+    return name.charAt(0).toUpperCase() + name.slice(1);
+});
+const avatarInitial = computed(() => displayName.value.slice(0, 2).toUpperCase());
 
 function handleLogout() {
     logout();
@@ -37,7 +44,7 @@ function handleLogout() {
                     <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
                     <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
                 </svg>
-                <span class="absolute top-2 right-2 w-2 h-2 bg-rose-500 rounded-full border-2 border-white animate-ping"></span>
+                <span class="absolute top-2 right-2 w-2 h-2 bg-rose-500 rounded-full border-2 border-white motion-safe:animate-ping"></span>
             </button>
 
             <div class="h-8 w-px bg-gray-200/80"></div>
@@ -45,15 +52,15 @@ function handleLogout() {
             <div class="flex items-center gap-1.5">
                 <div class="dropdown dropdown-end">
                     <div tabindex="0" role="button" class="flex items-center gap-2 rounded-full transition-colors py-1 pl-1 pr-2 sm:pr-2.5 hover:bg-black/5 active:scale-[0.98] cursor-pointer">
-                        <span class="grid h-8 w-8 place-items-center rounded-full bg-admin-sidebar text-xs font-display font-semibold text-white">A</span>
-                        <span class="hidden sm:block text-sm font-sans font-medium text-text-primary">Admin</span>
+                        <span class="grid h-8 w-8 place-items-center rounded-full bg-admin-sidebar text-xs font-display font-semibold text-white">{{ avatarInitial }}</span>
+                        <span class="hidden sm:block text-sm font-sans font-medium text-text-primary">{{ displayName }}</span>
                         <svg class="hidden sm:block h-4 w-4 text-text-primary/50" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <path d="m6 9 6 6 6-6" />
                         </svg>
                     </div>
 
                     <ul tabindex="0" class="dropdown-content menu z-50 mt-4 w-52 rounded-xl bg-base-100 p-1.5 shadow-lg">
-                        <li class="px-2.5 pb-1.5 pt-2 text-xs font-sans text-text-primary/50">Logged in as Administrator</li>
+                        <li class="px-2.5 pb-1.5 pt-2 text-xs font-sans text-text-primary/50">Logged in as {{ displayName }}</li>
                         <li>
                             <button type="button" class="rounded-lg font-medium font-sans text-red-600 hover:bg-red-50 cursor-pointer" @click="handleLogout">
                                 <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
