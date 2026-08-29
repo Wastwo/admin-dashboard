@@ -4,7 +4,9 @@ const isAuthenticated = ref(localStorage.getItem('isLoggedIn') === 'true')
 const currentUsername = ref(localStorage.getItem('username') || null)
 
 export function useAuth() {
-    const login = (username, password) => {
+    const login = async (username, password) => {
+        await new Promise(resolve => setTimeout(resolve, 1000))
+
         if (username === 'admin' && password === 'password') {
             isAuthenticated.value = true
             currentUsername.value = username
@@ -17,23 +19,23 @@ export function useAuth() {
         return false
     }
 
-    const logout = (() => {
+    const logout = () => {
         isAuthenticated.value = false
         currentUsername.value = null
         localStorage.removeItem('isLoggedIn')
         localStorage.removeItem('username')
         localStorage.removeItem('loginTime')
-    })
+    }
 
-    const cekAuth = (() => {
+    const checkAuth = () => {
         return isAuthenticated.value
-    })
+    }
 
     return {
         isAuthenticated: readonly(isAuthenticated),
-        currentUsername,
+        currentUsername: readonly(currentUsername),
         login,
         logout,
-        cekAuth,
+        checkAuth,
     }
 }
