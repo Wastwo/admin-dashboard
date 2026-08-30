@@ -1,0 +1,11 @@
+{
+  "version": 1,
+  "skills": {
+    "codebase-documenter": {
+      "source": "St4rkXc/skills",
+      "sourceType": "github",
+      "skillPath": "code/codebase-documenter/SKILL.md",
+      "computedHash": "fcd79e51ec664c2f15d7065e8e931a148f978f1029bbac9b1a0ea118e81f83f3"
+    }
+  }
+}

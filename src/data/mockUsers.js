@@ -1,3 +1,31 @@
+/**
+ * @module mockUsers
+ * @description Static mock dataset representing the application's user directory.
+ * Each entry models a user profile with nested stats, permissions, activity logs,
+ * and active sessions — mirroring the shape expected from a real API response.
+ */
+
+/**
+ * @typedef {Object} MockUser
+ * @property {number} id - Unique numeric identifier.
+ * @property {string} name - Full display name.
+ * @property {string} email - Contact email address.
+ * @property {string} username - Short login handle.
+ * @property {string} role - Role label (e.g. "Administrator", "Editor").
+ * @property {string} avatar - Two-letter initials used as avatar placeholder.
+ * @property {'active'|'inactive'} status - Current account status.
+ * @property {string} lastActive - Human-readable relative timestamp.
+ * @property {string} joinDate - Formatted account creation date.
+ * @property {string} location - City and state.
+ * @property {string} timezone - IANA-style timezone label.
+ * @property {Array<{label: string, value: string}>} stats - Dashboard stat cards.
+ * @property {Array<{label: string, value: string, tone: boolean}>} accountInfo - Account detail rows.
+ * @property {Array<{label: string, granted: boolean}>} permissions - Permission flags.
+ * @property {Array<{action: string, detail: string, time: string, icon: string, security: boolean}>} activityLog - Recent activity entries.
+ * @property {Array<{device: string, browser: string, location: string, active: boolean, lastActive: string, icon: string}>} sessions - Active device sessions.
+ */
+
+/** @type {MockUser[]} */
 export const mockUsers = [
     {
         id: 1,

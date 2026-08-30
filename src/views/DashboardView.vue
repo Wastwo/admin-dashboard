@@ -1,4 +1,10 @@
 <script setup>
+/**
+ * @component DashboardView
+ * @description Main overview page rendered at `/admin`. Displays four KPI stat
+ * cards, a "Top Users" panel (first four users), and a recent activity feed.
+ * Clicking a user card navigates to that user's detail page.
+ */
 import { computed, ref } from 'vue';
 import UserCard from '@/components/ui/UserCard.vue';
 import { useUsers } from '@/composables/useUsers.js';
@@ -7,10 +13,21 @@ import { useRouter } from 'vue-router';
 const router = useRouter();
 const { users } = useUsers();
 
+/**
+ * Derives the first four users for the "Top Users" panel.
+ *
+ * @type {import('vue').ComputedRef<Array<Object>>}
+ */
 const topUsers = computed(() => {
     return users.value.slice(0, 4);
 });
 
+/**
+ * Navigates to the user detail page for the given user ID.
+ *
+ * @param {number} userId - The ID of the selected user.
+ * @returns {void}
+ */
 const handleSelectUser = userId => {
     router.push({ name: 'user-detail', params: { id: userId } });
 };

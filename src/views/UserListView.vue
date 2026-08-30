@@ -1,13 +1,26 @@
 <script setup>
+/**
+ * @component UserListView
+ * @description Searchable list of all users rendered at `/admin/users`.
+ * Provides a text filter that matches against name and email, and navigates
+ * to the user detail page when a card is clicked.
+ */
 import { ref, computed } from 'vue';
 import { useRouter } from 'vue-router';
 import UserCard from '@/components/ui/UserCard.vue';
 import { useUsers } from '@/composables/useUsers.js';
 
+/** @type {import('vue').Ref<string>} Current search/filter input value. */
 const searchQuery = ref('');
 const router = useRouter();
 const { users } = useUsers();
 
+/**
+ * Returns users filtered by the current search query (case-insensitive
+ * match against name or email).
+ *
+ * @type {import('vue').ComputedRef<Array<Object>>}
+ */
 const filteredUsers = computed(() => {
     let result = users.value;
 
@@ -18,6 +31,12 @@ const filteredUsers = computed(() => {
     return result;
 });
 
+/**
+ * Navigates to the user detail page for the given user ID.
+ *
+ * @param {number} userId - The ID of the selected user.
+ * @returns {void}
+ */
 const handleSelectUser = userId => {
     router.push({ name: 'user-detail', params: { id: userId } });
 };

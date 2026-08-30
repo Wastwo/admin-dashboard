@@ -1,10 +1,16 @@
 <script setup>
+/**
+ * @component NotFoundView
+ * @description 404 error page displayed for any unmatched route. Shows the
+ * attempted URL and provides a button to navigate back to the dashboard.
+ */
 import { computed } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 
 const route = useRoute();
 const router = useRouter();
 
+/** @type {import('vue').ComputedRef<string>} The URL path the user attempted to visit. */
 const attemptedPath = computed(() => route.fullPath || '/');
 </script>
 

@@ -1,9 +1,17 @@
 <script setup>
+/**
+ * @component AdminLayout
+ * @description Root layout shell for all authenticated pages. Composes the
+ * collapsible sidebar, sticky header, and a scrollable `<RouterView>` content
+ * area. Manages the shared drawer-open state that is passed down to both
+ * `AdminSidebar` and `AdminHeader` via `v-model`.
+ */
 import { ref } from 'vue';
 import AdminHeader from './AdminHeader.vue';
 import AdminSidebar from './AdminSidebar.vue';
 import { RouterView } from 'vue-router';
 
+/** @type {import('vue').Ref<boolean>} Controls sidebar expanded/collapsed state. */
 const isDrawerOpen = ref(true);
 </script>
 

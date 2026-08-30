@@ -1,14 +1,38 @@
 <script setup>
+/**
+ * @component AdminSidebar
+ * @description Collapsible navigation sidebar for the admin panel. Renders
+ * the brand header, a toggle button, and a list of navigation links with
+ * active-route highlighting. Supports a compact icon-only mode when collapsed
+ * on desktop, and an overlay drawer mode on mobile.
+ *
+ * @props {boolean} [isDrawerOpen=true] - Two-way bound via `v-model:isDrawerOpen`;
+ *   controls whether the sidebar is expanded or collapsed.
+ */
 import { useRoute } from 'vue-router';
 
 const route = useRoute();
+/** Two-way binding with parent layout to synchronise sidebar open/close state. */
 const isDrawerOpen = defineModel('isDrawerOpen', { type: Boolean, default: true });
 
+/**
+ * Navigation items rendered in the sidebar.
+ *
+ * `exact: true` ensures the Dashboard link only highlights on the root
+ * `/admin` path, while `exact: false` lets the Users link stay highlighted
+ * for all nested routes like `/admin/users/:id`.
+ */
 const menuItems = [
     { label: 'Dashboard', to: '/admin', exact: true, icon: 'dashboard' },
     { label: 'Users', to: '/admin/users', exact: false, icon: 'users' },
 ];
 
+/**
+ * Determines whether a menu item should be visually highlighted as active.
+ *
+ * @param {{ to: string, exact: boolean }} item - The menu item configuration.
+ * @returns {boolean} `true` if the current route matches the item's path.
+ */
 function isActive(item) {
     if (item.exact) {
         return route.path === item.to;
