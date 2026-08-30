@@ -1,25 +1,44 @@
 <script setup>
+/**
+ * @component AdminHeader
+ * @description Sticky top header bar for authenticated pages. Displays the
+ * current page title, a notification bell, a mobile hamburger toggle, and a
+ * user dropdown menu with logout functionality.
+ *
+ * @props {boolean} [isDrawerOpen=true] - Two-way bound via `v-model:isDrawerOpen`;
+ *   toggles the mobile sidebar overlay when the hamburger button is clicked.
+ */
 import { useRoute, useRouter } from 'vue-router';
 import { useAuth } from '@/composables/useAuth';
 import { computed } from 'vue';
 
 const route = useRoute();
 const router = useRouter();
+/** Two-way binding with parent layout for mobile drawer toggle. */
 const isDrawerOpen = defineModel('isDrawerOpen', { type: Boolean, default: true });
 const { logout, currentUsername, loginTime } = useAuth();
 
+/** @type {import('vue').ComputedRef<string>} Current page title from route meta. */
 const pageTitle = computed(() => route.meta.title || 'Dashboard');
+/** @type {import('vue').ComputedRef<string>} Capitalised display name for the current user. */
 const displayName = computed(() => {
     const name = currentUsername.value ?? 'Admin';
     return name.charAt(0).toUpperCase() + name.slice(1);
 });
+/** @type {import('vue').ComputedRef<string>} Two-letter avatar initials. */
 const avatarInitial = computed(() => displayName.value.slice(0, 2).toUpperCase());
+/** @type {import('vue').ComputedRef<string>} Formatted login time (e.g. "02:30 PM"). */
 const formattedLoginTime = computed(() => {
     if (!loginTime.value) return '';
     const date = new Date(loginTime.value);
     return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 });
 
+/**
+ * Clears the auth session and redirects to the login page.
+ *
+ * @returns {void}
+ */
 function handleLogout() {
     logout();
     router.push('/login');

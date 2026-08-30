@@ -1,20 +1,41 @@
 <script setup>
+/**
+ * @component LoginView
+ * @description Full-screen login page with username/password form, client-side
+ * validation, loading spinner, and shake animation on error. On successful
+ * authentication, redirects to the originally requested page (if any) or
+ * falls back to `/admin`.
+ */
 import { ref, watch } from 'vue';
 import { useRouter } from 'vue-router';
 import { useAuth } from '@/composables/useAuth';
 
+/** @type {import('vue').Ref<string>} */
 const username = ref('');
+/** @type {import('vue').Ref<string>} */
 const password = ref('');
+/** @type {import('vue').Ref<string>} Current validation or auth error message. */
 const errorMessage = ref('');
+/** @type {import('vue').Ref<boolean>} Drives the CSS shake animation on error. */
 const isShaking = ref(false);
+/** @type {import('vue').Ref<boolean>} Whether the login request is in flight. */
 const isLoading = ref(false);
 const { login } = useAuth();
 const router = useRouter();
 
+// WHY: Clearing the error as soon as the user starts typing again provides
+// immediate feedback that the previous error has been acknowledged, avoiding
+// a stale error message lingering during the next attempt.
 watch([username, password], () => {
     if (errorMessage.value) errorMessage.value = '';
 });
 
+/**
+ * Displays an error message and triggers the shake animation.
+ *
+ * @param {string} message - The error text to display.
+ * @returns {void}
+ */
 const triggerError = message => {
     errorMessage.value = message;
     isShaking.value = true;
@@ -23,6 +44,14 @@ const triggerError = message => {
     }, 400);
 };
 
+/**
+ * Handles the login form submission.
+ *
+ * Validates that both fields are non-empty, delegates to `useAuth().login`,
+ * then either redirects to the saved destination or shows an error.
+ *
+ * @returns {Promise<void>}
+ */
 const handleLogin = async () => {
     errorMessage.value = '';
 

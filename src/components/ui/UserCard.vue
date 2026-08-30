@@ -1,13 +1,28 @@
 <script setup>
+/**
+ * @component UserCard
+ * @description Clickable card row displaying a user's avatar, name, optional
+ * email, status badge, and last-active timestamp. Used in both the dashboard
+ * "Top Users" panel and the full user list view.
+ *
+ * @props {Object} user - User data object (must include `id`, `name`, `avatar`).
+ * @props {boolean} [showEmail=true] - Whether to render the user's email address.
+ * @props {boolean} [showStatus=true] - Whether to render the active/inactive status badge.
+ *
+ * @emits {('selected', userId: number)} Emitted when the card is clicked, carrying the user's ID.
+ */
 defineProps({
+    /** The user data object — requires at minimum `id`, `name`, and `avatar`. */
     user: {
         type: Object,
         required: true,
     },
+    /** Controls visibility of the email line beneath the user's name. */
     showEmail: {
         type: Boolean,
         default: true,
     },
+    /** Controls visibility of the active/inactive status pill badge. */
     showStatus: {
         type: Boolean,
         default: true,

@@ -1,4 +1,11 @@
 <script setup>
+/**
+ * @component UserDetailView
+ * @description Detailed profile page for a single user, rendered at
+ * `/admin/users/:id`. Displays a skeleton loader during fetch, an error
+ * state with retry, and a tabbed interface (Overview / Activity / Sessions)
+ * once data is loaded.
+ */
 import { computed, onMounted, ref, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { useUsers } from '@/composables/useUsers';
@@ -6,10 +13,18 @@ import { useUsers } from '@/composables/useUsers';
 const route = useRoute();
 const router = useRouter();
 const { currentUser: user, fetchUserById, isLoading, errorMessage } = useUsers();
+/** @type {import('vue').Ref<string>} Currently active tab identifier. */
 const activeTab = ref('overview');
 
+/** @type {import('vue').ComputedRef<string>} Reactive user ID extracted from the route params. */
 const userId = computed(() => route.params.id);
 
+/**
+ * Wraps raw SVG path data in a pre-styled `<svg>` element string.
+ *
+ * @param {string} d - SVG inner markup (paths, circles, etc.).
+ * @returns {string} Complete SVG HTML string.
+ */
 const icon = d => {
     return `<svg class="size-3.5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${d}</svg>`;
 };
