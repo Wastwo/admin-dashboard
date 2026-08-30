@@ -1,6 +1,6 @@
 <script setup>
 import { computed, ref } from 'vue';
-import UserCard from '../components/ui/UserCard.vue';
+import UserCard from '@/components/ui/UserCard.vue';
 import { useUsers } from '@/composables/useUsers.js';
 import { useRouter } from 'vue-router';
 

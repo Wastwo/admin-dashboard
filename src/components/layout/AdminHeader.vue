@@ -1,17 +1,24 @@
 <script setup>
-import { useRouter } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
 import { useAuth } from '@/composables/useAuth';
 import { computed } from 'vue';
 
+const route = useRoute();
 const router = useRouter();
 const isDrawerOpen = defineModel('isDrawerOpen', { type: Boolean, default: true });
-const { logout, currentUsername } = useAuth();
+const { logout, currentUsername, loginTime } = useAuth();
 
+const pageTitle = computed(() => route.meta.title || 'Dashboard');
 const displayName = computed(() => {
     const name = currentUsername.value ?? 'Admin';
     return name.charAt(0).toUpperCase() + name.slice(1);
 });
 const avatarInitial = computed(() => displayName.value.slice(0, 2).toUpperCase());
+const formattedLoginTime = computed(() => {
+    if (!loginTime.value) return '';
+    const date = new Date(loginTime.value);
+    return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+});
 
 function handleLogout() {
     logout();
@@ -35,7 +42,7 @@ function handleLogout() {
                 </svg>
             </button>
 
-            <h1 class="text-base sm:text-lg font-display font-bold text-text-primary tracking-tight">Dashboard Overview</h1>
+            <h1 class="text-base sm:text-lg font-display font-bold text-text-primary tracking-tight">{{ pageTitle }}</h1>
         </div>
 
         <div class="flex items-center gap-3 sm:gap-5">
@@ -61,6 +68,7 @@ function handleLogout() {
 
                     <ul tabindex="0" class="dropdown-content menu z-50 mt-4 w-52 rounded-xl bg-base-100 p-1.5 shadow-lg">
                         <li class="px-2.5 pb-1.5 pt-2 text-xs font-sans text-text-primary/50">Logged in as {{ displayName }}</li>
+                        <li v-if="formattedLoginTime" class="px-2.5 pb-1.5 text-xs font-sans text-text-secondary/50">Since {{ formattedLoginTime }}</li>
                         <li>
                             <button type="button" class="rounded-lg font-medium font-sans text-red-600 hover:bg-red-50 cursor-pointer" @click="handleLogout">
                                 <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">

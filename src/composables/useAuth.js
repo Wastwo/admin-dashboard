@@ -2,6 +2,7 @@ import { readonly, ref } from "vue";
 
 const isAuthenticated = ref(localStorage.getItem('isLoggedIn') === 'true')
 const currentUsername = ref(localStorage.getItem('username') || null)
+const loginTime = ref(localStorage.getItem('loginTime') || null)
 
 export function useAuth() {
     const login = async (username, password) => {
@@ -10,9 +11,10 @@ export function useAuth() {
         if (username === 'admin' && password === 'password') {
             isAuthenticated.value = true
             currentUsername.value = username
+            loginTime.value = new Date().toISOString()
             localStorage.setItem('isLoggedIn', 'true')
             localStorage.setItem('username', username)
-            localStorage.setItem('loginTime', new Date().toISOString());
+            localStorage.setItem('loginTime', loginTime.value)
 
             return true
         }
@@ -22,6 +24,7 @@ export function useAuth() {
     const logout = () => {
         isAuthenticated.value = false
         currentUsername.value = null
+        loginTime.value = null
         localStorage.removeItem('isLoggedIn')
         localStorage.removeItem('username')
         localStorage.removeItem('loginTime')
@@ -34,6 +37,7 @@ export function useAuth() {
     return {
         isAuthenticated: readonly(isAuthenticated),
         currentUsername: readonly(currentUsername),
+        loginTime: readonly(loginTime),
         login,
         logout,
         checkAuth,

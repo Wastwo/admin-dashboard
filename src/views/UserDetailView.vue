@@ -1,15 +1,14 @@
 <script setup>
 import { computed, onMounted, ref, watch } from 'vue';
-import { useRouter } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
 import { useUsers } from '@/composables/useUsers';
 
-const props = defineProps({
-    id: { type: [String, Number], required: true },
-});
-
+const route = useRoute();
 const router = useRouter();
 const { currentUser: user, fetchUserById, isLoading, errorMessage } = useUsers();
 const activeTab = ref('overview');
+
+const userId = computed(() => route.params.id);
 
 const icon = d => {
     return `<svg class="size-3.5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${d}</svg>`;
@@ -59,15 +58,12 @@ const deviceIcons = {
 };
 
 onMounted(() => {
-    fetchUserById(props.id);
+    fetchUserById(userId.value);
 });
 
-watch(
-    () => props.id,
-    newId => {
-        fetchUserById(newId);
-    }
-);
+watch(userId, newId => {
+    fetchUserById(newId);
+});
 </script>
 
 <template>
@@ -170,7 +166,7 @@ watch(
             </button>
             <button
                 type="button"
-                @click="fetchUserById(id)"
+                @click="fetchUserById(userId)"
                 class="inline-flex items-center justify-center px-4 py-2 text-xs sm:text-sm font-semibold text-white bg-rose-600 hover:bg-rose-700 active:scale-95 rounded-lg shadow-sm transition-colors duration-200 cursor-pointer"
             >
                 <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">

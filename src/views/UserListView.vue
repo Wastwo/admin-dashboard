@@ -1,7 +1,7 @@
 <script setup>
 import { ref, computed } from 'vue';
 import { useRouter } from 'vue-router';
-import UserCard from '../components/ui/UserCard.vue';
+import UserCard from '@/components/ui/UserCard.vue';
 import { useUsers } from '@/composables/useUsers.js';
 
 const searchQuery = ref('');

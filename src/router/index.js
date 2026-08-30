@@ -38,7 +38,6 @@ const router = createRouter({
                     name: 'user-detail',
                     component: () => import('@/views/UserDetailView.vue'),
                     meta: { requiresAuth: true, title: 'User Details' },
-                    props: true,
                 }
             ]
         },
@@ -56,16 +55,17 @@ const router = createRouter({
 })
 
 router.beforeEach((to) => {
-    const { isAuthenticated } = useAuth()
+    const { checkAuth } = useAuth()
+    const isLoggedIn = checkAuth()
 
-    if (to.meta.requiresAuth && !isAuthenticated.value) {
+    if (to.meta.requiresAuth && !isLoggedIn) {
         return {
             path: '/login',
             query: { redirect: to.fullPath }
         }
     }
 
-    if (to.name === 'login' && isAuthenticated.value) {
+    if (to.name === 'login' && isLoggedIn) {
         return {
             path: '/admin'
         }
