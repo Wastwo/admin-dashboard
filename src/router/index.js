@@ -1,9 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import LoginView from '@/views/LoginView.vue'
-import AdminLayout from '@/components/layout/AdminLayout.vue'
-import DashboardView from '@/views/DashboardView.vue'
-import UserListView from '@/views/UserListView.vue'
-import UserDetailView from '@/views/UserDetailView.vue'
+import { useAuth } from '@/composables/useAuth'
 
 const router = createRouter({
     history: createWebHistory(import.meta.env.BASE_URL),
@@ -11,38 +7,77 @@ const router = createRouter({
         {
             path: '/login',
             name: 'login',
-            component: LoginView,
-            meta: { requiresAuth: false },
+            component: () => import('@/views/LoginView.vue'),
+            meta: {
+                requiresAuth: false,
+                title: 'Login',
+            },
         },
         {
             path: '/admin',
             name: 'admin',
-            component: AdminLayout,
-            meta: { requiresAuth: true },
+            component: () => import('@/components/layout/AdminLayout.vue'),
+            meta: {
+                requiresAuth: true,
+            },
             children: [
                 {
                     path: '',
                     name: 'dashboard',
-                    component: DashboardView,
+                    component: () => import('@/views/DashboardView.vue'),
+                    meta: { requiresAuth: true, title: 'Overview' },
                 },
                 {
                     path: 'users',
                     name: 'users',
-                    component: UserListView,
+                    component: () => import('@/views/UserListView.vue'),
+                    meta: { requiresAuth: true, title: 'User Management' },
                 },
                 {
                     path: 'users/:id',
                     name: 'user-detail',
-                    component: UserDetailView,
-                    props: true,
+                    component: () => import('@/views/UserDetailView.vue'),
+                    meta: { requiresAuth: true, title: 'User Details' },
                 }
             ]
         },
         {
             path: '/',
             redirect: '/admin'
+        },
+        {
+            path: '/:pathMatch(.*)*',
+            name: 'not-found',
+            component: () => import('@/views/NotFoundView.vue'),
+            meta: { title: '404 Not Found' }
         }
     ],
+})
+
+router.beforeEach((to) => {
+    const { checkAuth } = useAuth()
+    const isLoggedIn = checkAuth()
+
+    if (to.meta.requiresAuth && !isLoggedIn) {
+        return {
+            path: '/login',
+            query: { redirect: to.fullPath }
+        }
+    }
+
+    if (to.name === 'login' && isLoggedIn) {
+        return {
+            path: '/admin'
+        }
+    }
+
+    return true;
+})
+
+router.afterEach((to) => {
+    document.title = `Admin Dashboard - ${to.meta.title || to.name}`
+
+    window.scrollTo(0, 0)
 })
 
 export default router

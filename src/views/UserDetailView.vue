@@ -1,15 +1,14 @@
 <script setup>
 import { computed, onMounted, ref, watch } from 'vue';
-import { useRouter } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
 import { useUsers } from '@/composables/useUsers';
 
-const props = defineProps({
-    id: { type: [String, Number], required: true },
-});
-
+const route = useRoute();
 const router = useRouter();
 const { currentUser: user, fetchUserById, isLoading, errorMessage } = useUsers();
 const activeTab = ref('overview');
+
+const userId = computed(() => route.params.id);
 
 const icon = d => {
     return `<svg class="size-3.5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${d}</svg>`;
@@ -36,6 +35,7 @@ const accountInfo = computed(() => user.value?.accountInfo || []);
 const permissions = computed(() => user.value?.permissions || []);
 const activityLog = computed(() => user.value?.activityLog || []);
 const sessions = computed(() => user.value?.sessions || []);
+const isActive = computed(() => user.value?.status === 'active');
 const profileFields = computed(() => {
     if (!user.value) return [];
     return [
@@ -58,15 +58,12 @@ const deviceIcons = {
 };
 
 onMounted(() => {
-    fetchUserById(props.id);
+    fetchUserById(userId.value);
 });
 
-watch(
-    () => props.id,
-    newId => {
-        fetchUserById(newId);
-    }
-);
+watch(userId, newId => {
+    fetchUserById(newId);
+});
 </script>
 
 <template>
@@ -169,7 +166,7 @@ watch(
             </button>
             <button
                 type="button"
-                @click="fetchUserById(id)"
+                @click="fetchUserById(userId)"
                 class="inline-flex items-center justify-center px-4 py-2 text-xs sm:text-sm font-semibold text-white bg-rose-600 hover:bg-rose-700 active:scale-95 rounded-lg shadow-sm transition-colors duration-200 cursor-pointer"
             >
                 <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -187,7 +184,7 @@ watch(
 
     <div v-else-if="user" class="space-y-6">
         <nav class="flex items-center gap-2 text-sm text-text-secondary">
-            <button class="transition-colors hover:text-text-primary" @click="router.push({ name: 'users' })">Users</button>
+            <button class="transition-colors hover:text-text-primary cursor-pointer" @click="router.push({ name: 'users' })">Users</button>
             <svg class="size-3" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <path d="m9 18 6-6-6-6" />
             </svg>
@@ -203,7 +200,10 @@ watch(
                         >
                             {{ user.avatar }}
                         </div>
-                        <span class="absolute inset-e-0 bottom-0 size-3.5 translate-x-1/3 translate-y-1/3 rounded-full border-2 border-base-100 bg-admin-success sm:size-4"></span>
+                        <span
+                            class="absolute inset-e-0 bottom-0 size-3.5 translate-x-1/3 translate-y-1/3 rounded-full border-2 border-base-100 sm:size-4"
+                            :class="isActive ? 'bg-admin-success' : 'bg-text-secondary'"
+                        ></span>
                     </div>
                     <div class="flex flex-col gap-1.5 justify-center items-start pt-0.5">
                         <p class="text-[11px] font-semibold font-sans uppercase tracking-widest text-admin-accent">{{ user.role }}</p>
@@ -214,9 +214,9 @@ watch(
                     </div>
                 </div>
                 <div class="flex shrink-0 items-center gap-3 text-sm sm:flex-col sm:items-end sm:gap-1.5">
-                    <span class="inline-flex items-center gap-1.5 font-medium font-sans text-admin-success">
-                        <span class="size-1.5 rounded-full bg-admin-success"></span>
-                        Active
+                    <span class="inline-flex items-center gap-1.5 font-medium font-sans" :class="isActive ? 'text-admin-success' : 'text-text-secondary'">
+                        <span class="size-1.5 rounded-full" :class="isActive ? 'bg-admin-success' : 'bg-text-secondary'"></span>
+                        {{ isActive ? 'Active' : 'Inactive' }}
                     </span>
                     <span class="font-sans text-xs text-[#aab0bb]">Joined {{ user.joinDate }}</span>
                 </div>
